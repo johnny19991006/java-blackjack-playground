@@ -12,13 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BlackjackController {
-    private static final int VINGT_ET_UN = 21;
 
     public void play() {
         List<String> playersName = getPlayerName();
         Dealer dealer = new Dealer();
-        Players players = playersName.stream().map(Player::new)
-                .collect(Collectors.toCollection(Players::new));
+        Players players = Players.create(playersName);
         List<Player> allGamblers = getAllGamblers(dealer, players);
         allGamblers.forEach(dealer::allocateInitialCards);
         OutputView.printPlayersCard(allGamblers);
@@ -32,26 +30,14 @@ public class BlackjackController {
     }
 
     private void betting(Dealer dealer, Players players) {
-        List<Player> alivePlayers = players;
         boolean isPlaying;
         do {
-            isPlaying = isAnyOneGettingMoreCard(dealer, (Players) alivePlayers);
-            alivePlayers = filterBustedPlayer(alivePlayers);
-        }
-        while (isPlaying);
-    }
-
-    private List<Player> filterBustedPlayer(List<Player> alive) {
-        return alive.stream().filter(player -> player.calculateScore() <= VINGT_ET_UN)
-                .collect(Collectors.toList());
-    }
-
-    private boolean isAnyOneGettingMoreCard(Dealer dealer, Players players) {
-        boolean isPlaying = false;
-        for (Player player : players) {
-            isPlaying = isPlayerGettingMoreCard(dealer, player);
-        }
-        return isPlaying;
+            isPlaying = false;
+            for (Player player : players.getPlayers()) {
+                isPlaying |= isPlayerGettingMoreCard(dealer, player);
+            }
+            players.filterBustedPlayers();
+        } while (isPlaying);
     }
 
     private boolean isPlayerGettingMoreCard(Dealer dealer, Player player) {
@@ -80,7 +66,7 @@ public class BlackjackController {
     private List<Player> getAllGamblers(Dealer dealer, Players players) {
         List<Player> allGamblers = new ArrayList<>();
         allGamblers.add(dealer);
-        allGamblers.addAll(players);
+        allGamblers.addAll(players.getPlayers());
         return allGamblers;
     }
 }
