@@ -1,38 +1,34 @@
 package blackjack.domain;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Deck {
 
-    private final List<Card> cards;
+    private final ArrayDeque<Card> cards;
 
     public Deck() {
-        cards = new ArrayList<>();
+        cards = new ArrayDeque<>();
         setupCard();
         shuffle();
     }
 
     private void setupCard() {
-        for (Suit suit : Suit.values()) {
+        for (Suit suit : EnumSet.allOf(Suit.class)) {
             setTrump(suit);
         }
     }
 
     private void setTrump(Suit suit) {
-        for (Trump trump : Trump.values()) {
+        for (Trump trump : EnumSet.allOf(Trump.class)) {
             cards.add(new Card(suit, trump));
         }
     }
 
     private void shuffle() {
-        Collections.shuffle(cards);
+        Collections.shuffle(new ArrayList<>(cards));
     }
 
     public Card popCard() {
-        Card popped = cards.remove(0);
-        return new Card(popped.getSuit(), popped.getTrump());
+        return cards.pollFirst();
     }
-
 }
