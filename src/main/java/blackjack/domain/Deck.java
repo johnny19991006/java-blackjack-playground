@@ -4,31 +4,33 @@ import java.util.*;
 
 public class Deck {
 
-    private final ArrayDeque<Card> cards;
+    private final LinkedList<Card> cards;
 
     public Deck() {
-        cards = new ArrayDeque<>();
+        cards = new LinkedList<>();
         setupCard();
         shuffle();
     }
 
     private void setupCard() {
-        for (Suit suit : EnumSet.allOf(Suit.class)) {
+        for (Suit suit : Suit.values()) {
             setTrump(suit);
         }
     }
 
     private void setTrump(Suit suit) {
-        for (Trump trump : EnumSet.allOf(Trump.class)) {
+        for (Trump trump : Trump.values()) {
             cards.add(new Card(suit, trump));
         }
     }
 
     private void shuffle() {
-        Collections.shuffle(new ArrayList<>(cards));
+        Collections.shuffle(cards);
     }
 
     public Card popCard() {
-        return cards.pollFirst();
+        Card popped = cards.remove(0);
+        return new Card(popped.getSuit(), popped.getTrump());
     }
+
 }
